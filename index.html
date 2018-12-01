@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Todo List</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f2f2;
+        }
+
+        .container {
+            width: 500px;
+            max-width: 90%;
+            margin: 80px auto;
+            padding: 30px;
+            background: #ffffff;
+            border: 1px solid #ddd;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .input-area {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        #todoInput {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+
+        #addButton {
+            padding: 10px 20px;
+            border: none;
+            background: #337ab7;
+            color: white;
+            cursor: pointer;
+        }
+
+        #addButton:hover {
+            background: #286090;
+        }
+
+        #todoList {
+            list-style: none;
+            padding: 0;
+        }
+
+        .todo-item {
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #eee;
+            cursor: pointer;
+        }
+
+        .todo-item.completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>My Todo List</h1>
+
+        <div class="input-area">
+            <input type="text" id="todoInput" placeholder="Enter a task">
+            <button id="addButton">Add</button>
+        </div>
+
+        <ul id="todoList"></ul>
+
+    </div>
+
+    <script>
+
+        var input = document.getElementById("todoInput");
+        var button = document.getElementById("addButton");
+        var list = document.getElementById("todoList");
+
+        var todos = [];
+
+        function addTodo() {
+
+            var text = input.value.trim();
+
+            if (text === "") {
+                return;
+            }
+
+            todos.push({
+                text: text,
+                completed: false
+            });
+
+            input.value = "";
+
+            renderTodos();
+            saveTodos();
+        }
+
+        function renderTodos() {
+
+            list.innerHTML = "";
+
+            for (var i = 0; i < todos.length; i++) {
+
+                var item = document.createElement("li");
+
+                item.className = "todo-item";
+
+                if (todos[i].completed) {
+                    item.className += " completed";
+                }
+
+                item.innerHTML = todos[i].text;
+
+                item.setAttribute("data-index", i);
+
+                item.onclick = function () {
+
+                    var index =
+                        parseInt(this.getAttribute("data-index"));
+
+                    todos[index].completed =
+                        !todos[index].completed;
+
+                    renderTodos();
+                    saveTodos();
+                };
+
+                list.appendChild(item);
+            }
+        }
+
+        function saveTodos() {
+
+            localStorage.setItem(
+                "todos",
+                JSON.stringify(todos)
+            );
+        }
+
+        function loadTodos() {
+
+            var saved =
+                localStorage.getItem("todos");
+
+            if (saved) {
+
+                todos = JSON.parse(saved);
+
+                renderTodos();
+            }
+        }
+
+        button.onclick = addTodo;
+
+        input.onkeypress = function(event) {
+
+            if (event.keyCode === 13) {
+                addTodo();
+            }
+        };
+
+        loadTodos();
+
+    </script>
+
+</body>
+</html>
